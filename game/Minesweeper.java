@@ -5,38 +5,51 @@ import java.util.Arrays;
 
 public class Minesweeper {
 
-    private static int size;
+    private static int width;
+    private static int height;
     //the number of bombs = size * size / BOMBSCALE
     private static final int BOMBSCALE = 3;
 
-    private Mine[][] board;
+    private Tile[][] field;
 
 
     public Minesweeper(){
-        size = 5;
+        width = 5;
+        height = 5;
         setBoard();
     }
 
+    public Tile[][] getField(){
+        return field;
+    }
+
+    public int getWidth(){
+        return width;
+    }
+
+    public int getHeight(){
+        return height;
+    }
     public static int getSize(){
-        return size;
+        return width * height;
     }
 
     private void setBoard(){
-        int numberOfMines = size * size / BOMBSCALE;
+        int numberOfMines = width * height / BOMBSCALE;
         int[] bombCoordinates = generateMineCoordinates(numberOfMines);
         Arrays.sort(bombCoordinates);
         setBoard(bombCoordinates);
     }
 
     private void setBoard(int[] bombCoordinates){
-        board = new Mine[size][size];
-        for(int row = 0; row < size; row ++){
-            for(int column = 0; column < size; column ++){
-                if(hasValue(bombCoordinates,(row * size) + column)) {
-                    board[row][column] = new Mine();
+        field = new Tile[height][width];
+        for(int row = 0; row < height; row ++){
+            for(int column = 0; column < width; column ++){
+                if(hasValue(bombCoordinates,(row * width) + column)) {
+                    field[row][column] = new Mine();
                 }
                 else{
-                    board[row][column] = new EmptyMine();
+                    field[row][column] = new EmptyTile();
                 }
             }
         }
@@ -47,7 +60,7 @@ public class Minesweeper {
         //this is used to not always return true, as 0 exists in the array.
         fillMinusOne(bombCoords);
         for(int i = 0; i < numberOfMines; i ++){
-            int coordinate = (int) (Math.random() * (size * size));
+            int coordinate = (int) (Math.random() * (getSize()));
             if( hasValue(bombCoords,coordinate) == false){
                 bombCoords[i] = coordinate;
             }

@@ -1,6 +1,6 @@
 package Minesweeper.game;
 
-public class Mine {
+public class Mine extends Tile{
 
     private boolean isEmpty;
 
@@ -13,4 +13,7 @@ public class Mine {
         isEmpty = empty;
     }
 
+    public String toString(){
+        return "M";
+    }
 }
