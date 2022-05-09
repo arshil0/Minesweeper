@@ -5,11 +5,11 @@ import java.util.Arrays;
 
 public class Minesweeper {
 
-    public static boolean lost = false;
+    private static boolean lost = false;
     private static int width;
     private static int height;
     //the number of bombs = size * size / BOMBSCALE
-    private static final int BOMBSCALE = 4;
+    private static final int BOMBSCALE = 5;
 
     private Tile[][] field;
 
@@ -18,6 +18,13 @@ public class Minesweeper {
         width = 6;
         height = 6;
         setField();
+    }
+
+    public static boolean isLost(){
+        return lost;
+    }
+    public static void setLost(boolean lose){
+        lost = lose;
     }
 
     public Tile[][] getField(){
