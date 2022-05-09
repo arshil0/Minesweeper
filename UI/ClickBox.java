@@ -2,17 +2,19 @@ package Minesweeper.UI;
 
 import javax.swing.JButton;
 
-public class BlockHider extends JButton {
+public class ClickBox extends JButton {
 
     private boolean isMine;
     private int y;
     private int x;
 
 
-    public BlockHider(boolean isMine, int y, int x){
+    public ClickBox(boolean isMine, int y, int x){
+        super();
         this.isMine = isMine;
         this.y = y;
         this.x = x;
+        setVisible(true);
     }
 
     public boolean isMine(){

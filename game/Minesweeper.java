@@ -5,43 +5,44 @@ import java.util.Arrays;
 
 public class Minesweeper {
 
+    public static boolean lost = false;
     private static int width;
     private static int height;
     //the number of bombs = size * size / BOMBSCALE
-    private static final int BOMBSCALE = 3;
+    private static final int BOMBSCALE = 4;
 
     private Tile[][] field;
 
 
     public Minesweeper(){
-        width = 5;
-        height = 5;
-        setBoard();
+        width = 6;
+        height = 6;
+        setField();
     }
 
     public Tile[][] getField(){
         return field;
     }
 
-    public int getWidth(){
+    public static int getWidth(){
         return width;
     }
 
-    public int getHeight(){
+    public static int getHeight(){
         return height;
     }
     public static int getSize(){
         return width * height;
     }
 
-    private void setBoard(){
+    private void setField(){
         int numberOfMines = width * height / BOMBSCALE;
         int[] bombCoordinates = generateMineCoordinates(numberOfMines);
         Arrays.sort(bombCoordinates);
-        setBoard(bombCoordinates);
+        setField(bombCoordinates);
     }
 
-    private void setBoard(int[] bombCoordinates){
+    private void setField(int[] bombCoordinates){
         field = new Tile[height][width];
         for(int row = 0; row < height; row ++){
             for(int column = 0; column < width; column ++){
