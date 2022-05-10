@@ -80,17 +80,19 @@ public class Block extends JLabel implements MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if(e.getButton() == MouseEvent.BUTTON1) {
-            if (!Minesweeper.isLost()) {
+        if (!Minesweeper.isLost()) {
+            if (e.getButton() == MouseEvent.BUTTON1) {
+
                 setIcon(adjacentMines, type);
-                if (isMine)
+                if (isMine) {
                     Minesweeper.setLost(true);
-                if(adjacentMines == 0 && !isMine)
-                    openAdjacent(y,x);
+                    ongoingGame.loseScreen();
+                }
+                if (adjacentMines == 0 && !isMine)
+                    openAdjacent(y, x);
+            } else if (e.getButton() == MouseEvent.BUTTON3) {
+                System.out.println("a");
             }
-        }
-        else if(e.getButton() == MouseEvent.BUTTON3){
-            System.out.println("a");
         }
     }
 

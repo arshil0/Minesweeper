@@ -15,8 +15,8 @@ public class Minesweeper {
 
 
     public Minesweeper(){
-        width = 6;
-        height = 6;
+        width = 7;
+        height = 7;
         setField();
     }
 
@@ -94,7 +94,4 @@ public class Minesweeper {
         }
     }
 
-    public static void main(String[] args){
-        Minesweeper m = new Minesweeper();
-    }
 }

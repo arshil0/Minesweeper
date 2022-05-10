@@ -2,6 +2,7 @@ package Minesweeper.UI;
 
 import javax.swing.*;
 import Minesweeper.game.*;
+import Minesweeper.Items.*;
 
 import java.awt.*;
 
@@ -21,7 +22,7 @@ public class UI extends JFrame {
         //adjust the window
         setSize(FILESIZE + 428,FILESIZE);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
-        setLayout(new FlowLayout());
+        setLayout(new BorderLayout());
         setResizable(false);
 
 
@@ -29,7 +30,22 @@ public class UI extends JFrame {
         JPanel field = new JPanel(new GridLayout(game.getWidth(),game.getHeight()));
         addBlocksOnField(field);
 
-        add(field);
+        JPanel itemList = new JPanel();
+        itemList.setVisible(true);
+        itemList.setBackground(Color.DARK_GRAY);
+
+        JPanel fieldPanel = new JPanel();
+        fieldPanel.setVisible(true);
+        //fieldPanel.setBackground(Color.CYAN);
+
+        itemList.setBorder(BorderFactory.createEmptyBorder(0,0,50,0));
+        fieldPanel.add(field);
+        add(itemList, BorderLayout.NORTH);
+        add(fieldPanel,BorderLayout.CENTER);
+        itemList.add(new test(this));
+        //add(field,BorderLayout.CENTER);
+        //to open the frame in the middle of the screen
+        setLocationRelativeTo(null);
         setVisible(true);
 
     }
@@ -73,6 +89,17 @@ public class UI extends JFrame {
                 field.add(block);
             }
         }
+    }
+
+    public void loseScreen(){
+        JDialog loseScreen = new JDialog();
+        loseScreen.setLayout(new BorderLayout());
+        loseScreen.setResizable(false);
+        loseScreen.setSize(200,150);
+        loseScreen.add(new JLabel("you lost:"),BorderLayout.NORTH);
+        loseScreen.setVisible(true);
+        loseScreen.setLocationRelativeTo(null);
+
     }
 
 
