@@ -60,6 +60,10 @@ public class Block extends JLabel implements MouseListener {
             setIcon(new ImageIcon(new ImageIcon("src/Minesweeper/UI/Sprites/" + type + ".png").getImage().getScaledInstance(heightLength,widthLength,Image.SCALE_DEFAULT)));
         }
         revealed = true;
+        ongoingGame.getGame().moved();
+        if(ongoingGame.getGame().getMoves() == (Minesweeper.getWidth() * Minesweeper.getHeight()) - ongoingGame.getGame().getNumberOfMines() + 1){
+            ongoingGame.win();
+        }
     }
 
     private void flag(){
@@ -96,9 +100,9 @@ public class Block extends JLabel implements MouseListener {
 
     private int[] opening(){
         ArrayList<Integer> reservedCoordinates= new ArrayList<Integer>();
-        int[] rowOffSets = {-1,-1,-1,0,0,1,1,1};
-        int[] columnOffSets = {-1,0,1,-1,1,-1,0,1};
-        for(int i = 0; i < 8; i ++) {
+        int[] rowOffSets = {-1,-1,-1,0,0,1,1,1,0,0,-2,2};
+        int[] columnOffSets = {-1,0,1,-1,1,-1,0,1,-2,2,0,0};
+        for(int i = 0; i < rowOffSets.length; i ++) {
             int currentRow = y + rowOffSets[i];
             int currentColumn = x + columnOffSets[i];
             if (Position.validX(currentRow) && Position.validY(currentColumn)) {
@@ -125,13 +129,13 @@ public class Block extends JLabel implements MouseListener {
                 setIcon(adjacentMines,type);
             }
             else if (e.getButton() == MouseEvent.BUTTON1 && !flagged) {
-                setIcon(adjacentMines, type);
                 if (isMine) {
                     Minesweeper.setLost(true);
                     ongoingGame.loseScreen();
                 }
                 if (adjacentMines == 0 && !isMine)
                     openAdjacent(y, x);
+                setIcon(adjacentMines, type);
             } else if (e.getButton() == MouseEvent.BUTTON3 && !revealed && !Minesweeper.isFirstMove()) {
                 flag();
             }

@@ -45,7 +45,6 @@ public class UI extends JFrame {
 
         setLocationRelativeTo(null);
         setVisible(true);
-        System.out.println(blocks[1][1].adjacentMines);
 
 
 
@@ -95,7 +94,6 @@ public class UI extends JFrame {
                     blocks[row][column].setAdjacentMines(checkForMines(row, column));
             }
         }
-        System.out.println(blocks[1][1].adjacentMines);
     }
 
     private int checkForMines(int row, int column){
@@ -163,8 +161,22 @@ public class UI extends JFrame {
 
     }
 
-    public void updateBlock(Block b,int y,int x){
-        blocks[y][x] = b;
+    public void win() {
+        if (!game.isLost()) {
+            System.out.println("you won");
+            game.addItem(new test(this));
+            game.addItem(new Item(this));
+            updateItemList();
+        }
+    }
+
+    private void updateItemList(){
+        itemList.removeAll();
+        Item[] items = game.getItemList();
+        for(Item item: items){
+            itemList.add(item);
+        }
+        revalidate();
     }
 
     public static void main(String[] args){

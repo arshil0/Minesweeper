@@ -1,29 +1,35 @@
 package Minesweeper.game;
 
+import Minesweeper.Items.Item;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 
 public class Minesweeper {
-
     private static boolean firstMove = true;
     private static boolean lost = false;
+    private int moves = 0;
     private static int width;
     private static int height;
     //the number of bombs = size * size / BOMBSCALE
     private static final int BOMBSCALE = 5;
+    private static int scale = 1;
+    private ArrayList<Item> items = new ArrayList<Item>();
 
     private Tile[][] field;
 
 
     public Minesweeper(){
-        width = 20;
-        height = 20;
+        moves = 0;
+        width = 7;
+        height = 7;
         lost = false;
         firstMove = true;
         setField(null);
     }
 
     public Minesweeper(int width, int height, int[] reservedCoordinates){
+        moves = 0;
         this.width = width;
         this.height = height;
         lost = false;
@@ -31,6 +37,17 @@ public class Minesweeper {
         setField(reservedCoordinates);
     }
 
+    public int getMoves(){
+        return moves;
+    }
+    public void moved(){
+        moves += 1;
+        System.out.println(moves);
+    }
+
+    public int getNumberOfMines(){
+        return (int) ((width * height / BOMBSCALE) * scale);
+    }
     public static void setFirstMove(boolean f){
         firstMove = f;
     }
@@ -59,8 +76,20 @@ public class Minesweeper {
         return width * height;
     }
 
+    public void addItem(Item item){
+        items.add(item);
+    }
+
+    public Item[] getItemList(){
+        return items.toArray(new Item[0]);
+    }
+    public static void multiplyScale(double i){
+        if(scale * i < BOMBSCALE - 2)
+            scale *= i;
+    }
+
     public void setField(int[] reservedCoordinates){
-        int numberOfMines = width * height / BOMBSCALE;
+        int numberOfMines = (int) (width * height / BOMBSCALE * scale);
         int[] bombCoordinates = generateMineCoordinates(numberOfMines, reservedCoordinates);
         Arrays.sort(bombCoordinates);
         setField(bombCoordinates,reservedCoordinates);
