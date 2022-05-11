@@ -5,6 +5,7 @@ import java.util.Arrays;
 
 public class Minesweeper {
 
+    private static boolean firstMove = true;
     private static boolean lost = false;
     private static int width;
     private static int height;
@@ -15,11 +16,27 @@ public class Minesweeper {
 
 
     public Minesweeper(){
-        width = 7;
-        height = 7;
-        setField();
+        width = 20;
+        height = 20;
+        lost = false;
+        firstMove = true;
+        setField(null);
     }
 
+    public Minesweeper(int width, int height, int[] reservedCoordinates){
+        this.width = width;
+        this.height = height;
+        lost = false;
+        firstMove = true;
+        setField(reservedCoordinates);
+    }
+
+    public static void setFirstMove(boolean f){
+        firstMove = f;
+    }
+    public static boolean isFirstMove(){
+        return firstMove;
+    }
     public static boolean isLost(){
         return lost;
     }
@@ -42,14 +59,14 @@ public class Minesweeper {
         return width * height;
     }
 
-    private void setField(){
+    public void setField(int[] reservedCoordinates){
         int numberOfMines = width * height / BOMBSCALE;
-        int[] bombCoordinates = generateMineCoordinates(numberOfMines);
+        int[] bombCoordinates = generateMineCoordinates(numberOfMines, reservedCoordinates);
         Arrays.sort(bombCoordinates);
-        setField(bombCoordinates);
+        setField(bombCoordinates,reservedCoordinates);
     }
 
-    private void setField(int[] bombCoordinates){
+    public void setField(int[] bombCoordinates, int[] reservedCoordinates){
         field = new Tile[height][width];
         for(int row = 0; row < height; row ++){
             for(int column = 0; column < width; column ++){
@@ -63,30 +80,32 @@ public class Minesweeper {
         }
     }
 
-    private int[] generateMineCoordinates(int numberOfMines){
-        int[] bombCoords = new int[numberOfMines];
+    private int[] generateMineCoordinates(int numberOfMines, int[] reservedCoordinates){
+        int[] reservedCoords = new int[numberOfMines];
         //this is used to not always return true, as 0 exists in the array.
-        fillMinusOne(bombCoords);
+        fillMinusOne(reservedCoords);
         for(int i = 0; i < numberOfMines; i ++){
             int coordinate = (int) (Math.random() * (getSize()));
-            if( hasValue(bombCoords,coordinate) == false){
-                bombCoords[i] = coordinate;
+            if( !hasValue(reservedCoords,coordinate) && !hasValue(reservedCoordinates,coordinate)){
+                reservedCoords[i] = coordinate;
             }
             else{
                 i --;
             }
         }
-        return bombCoords;
+        return reservedCoords;
     }
 
     private boolean hasValue(int[] coordinates, int value){
-        for(int number: coordinates){
-            if(number == value){
-                return true;
+        if(coordinates != null)
+            for(int number: coordinates){
+                if(number == value){
+                    return true;
+                }
             }
-        }
         return false;
     }
+
     //this is to avoid having problems when the random coodinate is 0.
     private void fillMinusOne(int[] arr){
         for(int i = 0; i < arr.length; i ++){

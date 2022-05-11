@@ -5,53 +5,75 @@ import Minesweeper.game.*;
 import Minesweeper.Items.*;
 
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 public class UI extends JFrame {
 
+    private JPanel itemList;
+    private JPanel field;
     public static final int FILESIZE = 800;
     private Minesweeper game;
     private Block[][] blocks;
-    private ClickBox[][] clickBoxes;
 
     public UI(){
         super("Minesweeper");
         game = new Minesweeper();
-        blocks = new Block[game.getHeight()][game.getWidth()];
         setBlocks(game);
-
         //adjust the window
         setSize(FILESIZE + 428,FILESIZE);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         setLayout(new BorderLayout());
         setResizable(false);
 
+        field = new JPanel(new GridLayout(game.getWidth(),game.getHeight()));
 
-        //set the blocks on the field
-        JPanel field = new JPanel(new GridLayout(game.getWidth(),game.getHeight()));
-        addBlocksOnField(field);
-
-        JPanel itemList = new JPanel();
+        itemList = new JPanel();
         itemList.setVisible(true);
         itemList.setBackground(Color.DARK_GRAY);
+        itemList.setBorder(BorderFactory.createEmptyBorder(0,0,50,0));
+        add(itemList, BorderLayout.NORTH);
+
+        adjustField(null);
 
         JPanel fieldPanel = new JPanel();
         fieldPanel.setVisible(true);
         //fieldPanel.setBackground(Color.CYAN);
 
-        itemList.setBorder(BorderFactory.createEmptyBorder(0,0,50,0));
         fieldPanel.add(field);
-        add(itemList, BorderLayout.NORTH);
         add(fieldPanel,BorderLayout.CENTER);
-        itemList.add(new test(this));
-        //add(field,BorderLayout.CENTER);
-        //to open the frame in the middle of the screen
+
         setLocationRelativeTo(null);
         setVisible(true);
+        System.out.println(blocks[1][1].adjacentMines);
+
+
+
+        //itemList.add(new test(this));
+        //add(field,BorderLayout.CENTER);
+        //to open the frame in the middle of the screen
 
     }
 
+    public Minesweeper getGame(){
+        return game;
+    }
+
+    public void adjustField(int[] reservedCoordinates){
+        field.removeAll();
+        game = new Minesweeper(Minesweeper.getWidth(), Minesweeper.getHeight(), reservedCoordinates);
+        adjustBlocks(game);
+
+        //set the blocks on the field
+        addBlocksOnField(field);
+
+
+
+
+    }
 
     private void setBlocks(Minesweeper game){
+        blocks = new Block[game.getHeight()][game.getWidth()];
         Tile[][] field = game.getField();
         for(int row = 0; row < game.getHeight(); row ++){
             for(int column = 0; column < game.getWidth(); column++ ){
@@ -61,6 +83,19 @@ public class UI extends JFrame {
                     blocks[row][column].setAdjacentMines(checkForMines(row,column));
             }
         }
+    }
+
+    private void adjustBlocks(Minesweeper game) {
+        Tile[][] field = game.getField();
+        for (int row = 0; row < game.getHeight(); row++) {
+            for (int column = 0; column < game.getWidth(); column++) {
+                Tile currentTile = field[row][column];
+                blocks[row][column].changeValues(currentTile.toString(), currentTile instanceof  Mine, row, column);
+                if (currentTile instanceof EmptyTile)
+                    blocks[row][column].setAdjacentMines(checkForMines(row, column));
+            }
+        }
+        System.out.println(blocks[1][1].adjacentMines);
     }
 
     private int checkForMines(int row, int column){
@@ -96,15 +131,44 @@ public class UI extends JFrame {
         loseScreen.setLayout(new BorderLayout());
         loseScreen.setResizable(false);
         loseScreen.setSize(200,150);
-        loseScreen.add(new JLabel("you lost:"),BorderLayout.NORTH);
-        loseScreen.setVisible(true);
         loseScreen.setLocationRelativeTo(null);
+
+        JPanel youLost = new JPanel(new FlowLayout());
+        youLost.add(new JLabel("you Lost!"));
+
+        JPanel buttons = new JPanel(new FlowLayout());
+        JButton retry = new JButton("retry");
+        retry.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dispose();
+                loseScreen.dispose();
+                new UI();
+            }
+        });
+        JButton exit = new JButton("exit");
+        exit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+
+        buttons.add(retry);
+        buttons.add(exit);
+        loseScreen.add(youLost,BorderLayout.NORTH);
+        loseScreen.add(buttons,BorderLayout.CENTER);
+        loseScreen.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
+        loseScreen.setVisible(true);
 
     }
 
+    public void updateBlock(Block b,int y,int x){
+        blocks[y][x] = b;
+    }
 
     public static void main(String[] args){
-        UI u = new UI();
+        new UI();
     }
 
 

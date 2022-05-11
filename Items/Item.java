@@ -21,8 +21,9 @@ public class Item extends JLabel implements MouseListener {
         this.ongoingGame = game;
         description.add(text);
         description.setLocationRelativeTo(this);
+        description.setBackground(Color.DARK_GRAY);
         setDescription("<html>test<br/>tests<br/>aa<br/>bb<br/>cc</html>");
-        setIcon(new ImageIcon(new ImageIcon("src/Minesweeper/UI/Sprites/placeholder.png").getImage().getScaledInstance(UI.FILESIZE/ Minesweeper.getHeight()/2,UI.FILESIZE/Minesweeper.getWidth()/2, Image.SCALE_DEFAULT)));
+        setIcon(new ImageIcon(new ImageIcon("src/Minesweeper/UI/Sprites/block.png").getImage().getScaledInstance(UI.FILESIZE/ Minesweeper.getHeight()/2,UI.FILESIZE/Minesweeper.getWidth()/2, Image.SCALE_DEFAULT)));
         addMouseListener(this);
     }
 
