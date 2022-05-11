@@ -30,7 +30,7 @@ public class UI extends JFrame {
 
         itemList = new JPanel();
         itemList.setVisible(true);
-        itemList.setBackground(Color.DARK_GRAY);
+        itemList.setBackground(new Color(34, 34, 35));
         itemList.setBorder(BorderFactory.createEmptyBorder(0,0,50,0));
         add(itemList, BorderLayout.NORTH);
 
@@ -38,7 +38,6 @@ public class UI extends JFrame {
 
         JPanel fieldPanel = new JPanel();
         fieldPanel.setVisible(true);
-        //fieldPanel.setBackground(Color.CYAN);
 
         fieldPanel.add(field);
         add(fieldPanel,BorderLayout.CENTER);
@@ -165,7 +164,6 @@ public class UI extends JFrame {
         if (!game.isLost()) {
             System.out.println("you won");
             game.addItem(new test(this));
-            game.addItem(new Item(this));
             updateItemList();
         }
     }
