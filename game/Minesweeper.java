@@ -92,6 +92,7 @@ public class Minesweeper {
             shield-= 1;
         else{
             health -=1;
+            items.remove(new SmallHeart());
         }
     }
     public static int getShield(){

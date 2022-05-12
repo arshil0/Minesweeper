@@ -38,11 +38,13 @@ public class ItemChooser extends JDialog {
             }
         }
         else{
-            int[] reservedItemCoordinates = new int[itemsToChooseFrom ];
+            int[] reservedItemCoordinates = new int[itemsToChooseFrom];
+            //this is to avoid matching the first indexed number, which is 0;
+            fillArrayWithMinusOne(reservedItemCoordinates);
             for(int i = 0; i < itemsToChooseFrom ; i ++){
                 int randomItemNumber = (int) (Math.random() * itemList.length);
                 boolean success = true;
-
+                System.out.println(itemList[randomItemNumber] + " first step");
                 for(int r: reservedItemCoordinates){
                     if(r == randomItemNumber){
                         i --;
@@ -55,6 +57,12 @@ public class ItemChooser extends JDialog {
                     itemPanel.add(itemList[randomItemNumber]);
                 }
             }
+        }
+    }
+
+    private void fillArrayWithMinusOne(int[] arr){
+        for(int i = 0; i < arr.length; i ++){
+            arr[i] = -1;
         }
     }
 

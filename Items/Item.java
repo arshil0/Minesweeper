@@ -75,6 +75,10 @@ public abstract class Item extends JLabel implements MouseListener {
         }
     }
 
+    public static void addOnItemList(Item item){
+        itemList.add(item);
+    }
+
     //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     //IMPORTANT: add any new items here in this method. ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public static void refreshItemList(UI ongoingGame){
@@ -82,6 +86,7 @@ public abstract class Item extends JLabel implements MouseListener {
         itemList.add(new SmallHeart(ongoingGame));
         itemList.add(new MineShield(ongoingGame));
         itemList.add(new ScoreMultiplier(ongoingGame));
+        itemList.add(new RedDice(ongoingGame));
     }
 
     public void putIcon(){
