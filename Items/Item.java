@@ -9,21 +9,28 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
 
-public class Item extends JLabel implements MouseListener {
+public abstract class Item extends JLabel implements MouseListener {
 
+    public static final int ICONSIZE = 75;
+    private static ArrayList<Item> itemList = new ArrayList<>();
     private JDialog description = new JDialog();
+    private JLabel benefit = new JLabel();
+    private JLabel sabotage = new JLabel();
     private JLabel text = new JLabel();
 
     private static ArrayList<Item> allItems;
     private UI ongoingGame;
 
+    public Item(){
+
+    }
     public Item(UI game){
         this.ongoingGame = game;
-        description.add(text);
+        description.add(benefit, BorderLayout.NORTH);
+        description.add(sabotage, BorderLayout.CENTER);
+        description.add(text, BorderLayout.SOUTH);
         description.setLocationRelativeTo(this);
-        description.setBackground(Color.DARK_GRAY);
-        setDescription("<html>test<br/>tests<br/>aa<br/>bb<br/>cc</html>");
-        setIcon(new ImageIcon(new ImageIcon("src/Minesweeper/UI/Sprites/block.png").getImage().getScaledInstance(UI.FILESIZE/ Minesweeper.getHeight()/2,UI.FILESIZE/Minesweeper.getWidth()/2, Image.SCALE_DEFAULT)));
+        description.getContentPane().setBackground(Color.GRAY);
         addMouseListener(this);
     }
 
@@ -34,14 +41,43 @@ public class Item extends JLabel implements MouseListener {
     }
 
     public void setDescription(String text){
-        int lines = text.split("<br/>").length;
-        System.out.println(lines);
-        this.text.setForeground(Color.BLUE);
-        description.setSize(400,(lines * 20) + 50);
+        String[] lines = text.split("<br/>");
+        this.benefit.setForeground(Color.GREEN);
+        this.sabotage.setForeground(Color.RED);
+        this.text.setForeground(Color.DARK_GRAY);
+        description.setSize(400,(lines.length * 20) + 50);
         description.revalidate();
-        this.text.setText(text);
+        this.benefit.setText(lines[0]);
+        this.sabotage.setText(lines[2]);
+        if(lines.length >= 4)
+            this.text.setText(lines[4]);
     }
 
+    public static Item[] getItemList(){
+        if(!itemList.isEmpty())
+            return itemList.toArray(new Item[0]);
+        return null;
+    }
+
+    public static void removeFromItemList(Item item){
+        for(int i = 0; i < itemList.size(); i ++){
+            if (itemList.get(i).getClass() == item.getClass()){
+                itemList.remove(i);
+            }
+        }
+    }
+
+    public static void refreshItemList(UI ongoingGame){
+        System.out.println("refreshed");
+        itemList.clear();
+        itemList.add(new test(ongoingGame));
+    }
+
+    public static void print(){
+        for(Item i: itemList){
+            System.out.println(i);
+        }
+    }
     @Override
     public void mouseClicked(MouseEvent e) {
 

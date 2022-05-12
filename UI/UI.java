@@ -11,14 +11,34 @@ import java.awt.event.ActionListener;
 public class UI extends JFrame {
 
     private JPanel itemList;
+    private JPanel fieldPanel;
     private JPanel field;
+    private JPanel gameStats;
+    private JLabel mineCount = new JLabel("Mines: ");
+    private int currentNumberOfMines;
+    private JPanel playerStats;
+    private JLabel health;
+    private JLabel shield = new JLabel("Shield: ");
+
+    private static boolean firstTimeOpeningProgram = true;
+    private static boolean choosingItem = false;
+
     public static final int FILESIZE = 800;
     private Minesweeper game;
     private Block[][] blocks;
 
     public UI(){
+        //this also sets the width and height of Minesweeper to the given values;
+        this(Minesweeper.STARTWIDTH,Minesweeper.STARTHEIGHT);
+    }
+
+    public UI(int width, int height){
         super("Minesweeper");
-        game = new Minesweeper();
+        if(firstTimeOpeningProgram){
+            Item.refreshItemList(this);
+            firstTimeOpeningProgram = false;
+        }
+        game = new Minesweeper(width,height);
         setBlocks(game);
         //adjust the window
         setSize(FILESIZE + 428,FILESIZE);
@@ -28,7 +48,7 @@ public class UI extends JFrame {
 
         field = new JPanel(new GridLayout(game.getWidth(),game.getHeight()));
 
-        itemList = new JPanel();
+        itemList = new JPanel(new FlowLayout());
         itemList.setVisible(true);
         itemList.setBackground(new Color(34, 34, 35));
         itemList.setBorder(BorderFactory.createEmptyBorder(0,0,50,0));
@@ -36,21 +56,48 @@ public class UI extends JFrame {
 
         adjustField(null);
 
-        JPanel fieldPanel = new JPanel();
+        fieldPanel = new JPanel();
         fieldPanel.setVisible(true);
 
         fieldPanel.add(field);
         add(fieldPanel,BorderLayout.CENTER);
 
+        currentNumberOfMines = game.getNumberOfTotalMines();
+        mineCount.setText("Mines: " + currentNumberOfMines);
+        gameStats = new JPanel(new BorderLayout());
+        gameStats.add(mineCount,BorderLayout.NORTH);
+        gameStats.setBorder(BorderFactory.createEmptyBorder(0,0,0,100));
+        add(gameStats,BorderLayout.EAST);
+
+        health = new JLabel("Health: " + game.getHealth());
+        playerStats = new JPanel();
+        playerStats.add(health);
+        playerStats.setBorder(BorderFactory.createEmptyBorder(0,100,0,0));
+        add(playerStats,BorderLayout.WEST);
+
+        updateItemList();
         setLocationRelativeTo(null);
         setVisible(true);
+    }
 
+    public void minusMineCount(){
+        mineCount.setText("Mines: " + --currentNumberOfMines );
+    }
 
+    public void plusMineCount(){
+        mineCount.setText("Mines: " + ++currentNumberOfMines);
+    }
 
-        //itemList.add(new test(this));
-        //add(field,BorderLayout.CENTER);
-        //to open the frame in the middle of the screen
+    public void updateHealth(){
+        health.setText("Health: " + game.getHealth());
+    }
 
+    public void updateShield(){
+        shield.setText("Shield: " + game.getShield());
+    }
+
+    public boolean isChoosingItem(){
+        return choosingItem;
     }
 
     public Minesweeper getGame(){
@@ -124,6 +171,8 @@ public class UI extends JFrame {
     }
 
     public void loseScreen(){
+        firstTimeOpeningProgram = true;
+        game.setLost(true);
         JDialog loseScreen = new JDialog();
         loseScreen.setLayout(new BorderLayout());
         loseScreen.setResizable(false);
@@ -163,11 +212,18 @@ public class UI extends JFrame {
     public void win() {
         if (!game.isLost()) {
             System.out.println("you won");
-            game.addItem(new test(this));
-            updateItemList();
+            ItemChooser itemChooser = new ItemChooser(this);
+            itemChooser.setVisible(true);
+            choosingItem = true;
+
         }
     }
 
+    public void nextLevel(){
+        choosingItem = false;
+        new UI(Minesweeper.getWidth() + 1, Minesweeper.getHeight() + 1);
+        dispose();
+    }
     private void updateItemList(){
         itemList.removeAll();
         Item[] items = game.getItemList();

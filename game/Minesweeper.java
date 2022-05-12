@@ -1,37 +1,52 @@
 package Minesweeper.game;
 
-import Minesweeper.Items.Item;
+import Minesweeper.Items.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 public class Minesweeper {
-    private static boolean firstMove = true;
+
+    public static final int STARTWIDTH = 4;
+    public static final int STARTHEIGHT = 4;
     private static boolean lost = false;
+    private boolean firstMove = true;
+    private static int health = 1;
+    private static int shield = 0;
     private int moves = 0;
+    private int openedTiles = 0;
     private static int width;
     private static int height;
     //the number of bombs = size * size / BOMBSCALE
     private static final int BOMBSCALE = 5;
     private static int scale = 1;
-    private ArrayList<Item> items = new ArrayList<Item>();
-
+    private static ArrayList<Item> items = new ArrayList<Item>();
     private Tile[][] field;
 
 
     public Minesweeper(){
+        this(4,4);
+    }
+
+    public Minesweeper(int w, int h){
+        if(w <= STARTWIDTH && h <= STARTHEIGHT)
+            items.clear();
+        health = 1;
+        shield = 0;
         moves = 0;
-        width = 7;
-        height = 7;
+        openedTiles = 0;
+        width = w;
+        height = h;
         lost = false;
         firstMove = true;
         setField(null);
     }
 
-    public Minesweeper(int width, int height, int[] reservedCoordinates){
+    public Minesweeper(int w, int h, int[] reservedCoordinates){
         moves = 0;
-        this.width = width;
-        this.height = height;
+        width = w;
+        height = h;
         lost = false;
         firstMove = true;
         setField(reservedCoordinates);
@@ -42,16 +57,38 @@ public class Minesweeper {
     }
     public void moved(){
         moves += 1;
-        System.out.println(moves);
     }
 
-    public int getNumberOfMines(){
+    public int getOpenedTiles(){
+        return openedTiles;
+    }
+
+    public void openedTile(){
+        openedTiles += 1;
+    }
+    public int getHealth(){
+        return health;
+    }
+
+    public void takeDamage(){
+        if(shield > 0)
+            shield-= 1;
+        else{
+            health -=1;
+        }
+    }
+
+    public int getShield(){
+        return shield;
+    }
+    public int getNumberOfTotalMines(){
         return (int) ((width * height / BOMBSCALE) * scale);
     }
-    public static void setFirstMove(boolean f){
+    public void setFirstMove(boolean f){
         firstMove = f;
+        moved();
     }
-    public static boolean isFirstMove(){
+    public boolean isFirstMove(){
         return firstMove;
     }
     public static boolean isLost(){
@@ -72,15 +109,18 @@ public class Minesweeper {
     public static int getHeight(){
         return height;
     }
+
     public static int getSize(){
         return width * height;
     }
 
-    public void addItem(Item item){
+    public static void addItem(Item item){
         items.add(item);
+        System.out.println(items.size());
+        System.out.println(getItemList().length);
     }
 
-    public Item[] getItemList(){
+    public static Item[] getItemList(){
         return items.toArray(new Item[0]);
     }
     public static void multiplyScale(double i){

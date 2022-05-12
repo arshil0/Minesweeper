@@ -53,26 +53,27 @@ public class Block extends JLabel implements MouseListener {
         this.y = y;
         this.x = x;
     }
-    public void setIcon(int adjacentMines, String type){
+    public void updateIcon(int adjacentMines, String type){
         if(adjacentMines != 0 && !isMine)
             setIcon(new ImageIcon(new ImageIcon("src/Minesweeper/UI/Sprites/E" + adjacentMines + ".png").getImage().getScaledInstance(heightLength,widthLength,Image.SCALE_DEFAULT)));
         else{
             setIcon(new ImageIcon(new ImageIcon("src/Minesweeper/UI/Sprites/" + type + ".png").getImage().getScaledInstance(heightLength,widthLength,Image.SCALE_DEFAULT)));
         }
         revealed = true;
-        ongoingGame.getGame().moved();
-        if(ongoingGame.getGame().getMoves() == (Minesweeper.getWidth() * Minesweeper.getHeight()) - ongoingGame.getGame().getNumberOfMines() + 1){
+        ongoingGame.getGame().openedTile();
+        if(ongoingGame.getGame().getOpenedTiles() == (Minesweeper.getWidth() * Minesweeper.getHeight()) - ongoingGame.getGame().getNumberOfTotalMines()){
             ongoingGame.win();
         }
     }
-
     private void flag(){
         flagged = !flagged;
         if(flagged){
             setIcon(new ImageIcon(new ImageIcon("src/Minesweeper/UI/Sprites/flag.png").getImage().getScaledInstance(heightLength,widthLength,Image.SCALE_DEFAULT)));
+            ongoingGame.minusMineCount();
         }
         else{
             setIcon(new ImageIcon(new ImageIcon("src/Minesweeper/UI/Sprites/block.png").getImage().getScaledInstance(heightLength,widthLength,Image.SCALE_DEFAULT)));
+            ongoingGame.plusMineCount();
         }
     }
 
@@ -89,7 +90,7 @@ public class Block extends JLabel implements MouseListener {
             if (Position.validX(currentRow) && Position.validY(currentColumn)) {
                 Block b = ongoingGame.getBlocks()[currentRow][currentColumn];
                 if(!b.isRevealed() && !b.flagged){
-                    b.setIcon(b.adjacentMines,b.type);
+                    b.updateIcon(b.adjacentMines,b.type);
                     if(b.adjacentMines == 0){
                         openAdjacent(b.y,b.x);
                     }
@@ -121,22 +122,28 @@ public class Block extends JLabel implements MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (!Minesweeper.isLost()) {
-            if(Minesweeper.isFirstMove() && e.getButton() == MouseEvent.BUTTON1){
+        if (!Minesweeper.isLost() && !ongoingGame.isChoosingItem()) {
+            if(ongoingGame.getGame().isFirstMove() && e.getButton() == MouseEvent.BUTTON1){
                 ongoingGame.adjustField(opening());
-                Minesweeper.setFirstMove(false);
+                ongoingGame.getGame().setFirstMove(false);
+                updateIcon(adjacentMines,type);
                 openAdjacent(y,x);
-                setIcon(adjacentMines,type);
             }
             else if (e.getButton() == MouseEvent.BUTTON1 && !flagged) {
                 if (isMine) {
-                    Minesweeper.setLost(true);
-                    ongoingGame.loseScreen();
+                    ongoingGame.getGame().takeDamage();
+                    ongoingGame.updateHealth();
+                    if(ongoingGame.getGame().getHealth() == 0)
+                        ongoingGame.loseScreen();
                 }
                 if (adjacentMines == 0 && !isMine)
                     openAdjacent(y, x);
-                setIcon(adjacentMines, type);
-            } else if (e.getButton() == MouseEvent.BUTTON3 && !revealed && !Minesweeper.isFirstMove()) {
+                if(!revealed){
+                    ongoingGame.getGame().moved();
+                    updateIcon(adjacentMines, type);
+                }
+
+            } else if (e.getButton() == MouseEvent.BUTTON3 && !revealed && !ongoingGame.getGame().isFirstMove()) {
                 flag();
             }
         }
