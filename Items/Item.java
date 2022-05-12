@@ -13,26 +13,31 @@ public abstract class Item extends JLabel implements MouseListener {
 
     public static final int ICONSIZE = 75;
     private static ArrayList<Item> itemList = new ArrayList<>();
-    private JDialog description = new JDialog();
+    private JDialog description;
     private JLabel benefit = new JLabel();
     private JLabel sabotage = new JLabel();
     private JLabel text = new JLabel();
 
     private static ArrayList<Item> allItems;
-    private UI ongoingGame;
+    private static UI ongoingGame;
 
     public Item(){
 
     }
     public Item(UI game){
         this.ongoingGame = game;
+        description = new JDialog();
         description.add(benefit, BorderLayout.NORTH);
         description.add(sabotage, BorderLayout.CENTER);
         description.add(text, BorderLayout.SOUTH);
-        description.setLocationRelativeTo(this);
+        description.setLocation(ongoingGame.getX() + ongoingGame.FILESIZE/4,ongoingGame.getY() + ongoingGame.FILESIZE/2);
         description.getContentPane().setBackground(Color.GRAY);
         addMouseListener(this);
+        putIcon();
+        setDescription(getDescription());
     }
+
+    public abstract String getDescription();
 
     private void description(){
         if(!Minesweeper.isLost()){
@@ -42,13 +47,16 @@ public abstract class Item extends JLabel implements MouseListener {
 
     public void setDescription(String text){
         String[] lines = text.split("<br/>");
+
         this.benefit.setForeground(Color.GREEN);
         this.sabotage.setForeground(Color.RED);
         this.text.setForeground(Color.DARK_GRAY);
-        description.setSize(400,(lines.length * 20) + 50);
+
+        description.setSize(800,(lines.length * 20) + 50);
         description.revalidate();
         this.benefit.setText(lines[0]);
-        this.sabotage.setText(lines[2]);
+        if(lines.length >= 2)
+            this.sabotage.setText(lines[2]);
         if(lines.length >= 4)
             this.text.setText(lines[4]);
     }
@@ -67,12 +75,22 @@ public abstract class Item extends JLabel implements MouseListener {
         }
     }
 
+    //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    //IMPORTANT: add any new items here in this method. ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     public static void refreshItemList(UI ongoingGame){
-        System.out.println("refreshed");
         itemList.clear();
-        itemList.add(new test(ongoingGame));
+        itemList.add(new SmallHeart(ongoingGame));
+        itemList.add(new MineShield(ongoingGame));
+        itemList.add(new ScoreMultiplier(ongoingGame));
     }
 
+    public void putIcon(){
+        setIcon(new ImageIcon(new ImageIcon("src/Minesweeper/Items/Sprites/" + this + ".png").getImage().getScaledInstance(ICONSIZE,ICONSIZE,Image.SCALE_DEFAULT)));
+    }
+
+    public static void setOngoingGame(UI o){
+        ongoingGame = o;
+    }
     public static void print(){
         for(Item i: itemList){
             System.out.println(i);
@@ -80,7 +98,15 @@ public abstract class Item extends JLabel implements MouseListener {
     }
     @Override
     public void mouseClicked(MouseEvent e) {
-
+        if(UI.isChoosingItem()){
+            Minesweeper.addItem(this);
+            if(this instanceof OnItemPickup){
+                ((OnItemPickup) this).onItemPickup(ongoingGame);
+            }
+            this.mouseExited(e);
+            removeFromItemList(this);
+            ongoingGame.closeItemChooser();
+        }
     }
 
     @Override
@@ -102,4 +128,6 @@ public abstract class Item extends JLabel implements MouseListener {
     public void mouseExited(MouseEvent e) {
         description.setVisible(false);
     }
+
+    public abstract String toString();
 }

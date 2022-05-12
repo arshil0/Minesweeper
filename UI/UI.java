@@ -16,9 +16,14 @@ public class UI extends JFrame {
     private JPanel gameStats;
     private JLabel mineCount = new JLabel("Mines: ");
     private int currentNumberOfMines;
-    private JPanel playerStats;
-    private JLabel health;
+    private static JPanel playerStats;
+    private JLabel health = new JLabel("Health: ");
     private JLabel shield = new JLabel("Shield: ");
+
+    private static JPanel scorePanel = new JPanel();
+    private static JLabel score = new JLabel("Score: ");
+
+    private ItemChooser itemChooser;
 
     private static boolean firstTimeOpeningProgram = true;
     private static boolean choosingItem = false;
@@ -34,11 +39,22 @@ public class UI extends JFrame {
 
     public UI(int width, int height){
         super("Minesweeper");
-        if(firstTimeOpeningProgram){
-            Item.refreshItemList(this);
-            firstTimeOpeningProgram = false;
+
+        Item.setOngoingGame(this);
+        for(Item item: Minesweeper.getItemList()){
+            if(item instanceof OnStartItem){
+                ((OnStartItem) item).onStart(this);
+            }
         }
         game = new Minesweeper(width,height);
+        if(firstTimeOpeningProgram){
+            Item.refreshItemList(this);
+            Minesweeper.setShield(0);
+            Minesweeper.setScale(1);
+            Minesweeper.setScoreMultiplier(1);
+            shield.setVisible(false);
+            firstTimeOpeningProgram = false;
+        }
         setBlocks(game);
         //adjust the window
         setSize(FILESIZE + 428,FILESIZE);
@@ -69,15 +85,25 @@ public class UI extends JFrame {
         gameStats.setBorder(BorderFactory.createEmptyBorder(0,0,0,100));
         add(gameStats,BorderLayout.EAST);
 
-        health = new JLabel("Health: " + game.getHealth());
-        playerStats = new JPanel();
-        playerStats.add(health);
+        playerStats = new JPanel(new BorderLayout());
+        updateHealth();
+        updateShield();
+        playerStats.add(health,BorderLayout.NORTH);
+        playerStats.add(shield,BorderLayout.CENTER);
         playerStats.setBorder(BorderFactory.createEmptyBorder(0,100,0,0));
         add(playerStats,BorderLayout.WEST);
+
+
+        updateScore();
+        scorePanel.add(score);
+        scorePanel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
+        add(scorePanel,BorderLayout.SOUTH);
+
 
         updateItemList();
         setLocationRelativeTo(null);
         setVisible(true);
+
     }
 
     public void minusMineCount(){
@@ -88,20 +114,29 @@ public class UI extends JFrame {
         mineCount.setText("Mines: " + ++currentNumberOfMines);
     }
 
+    public void addShield(){
+        shield.setVisible(true);
+        updateShield();
+    }
     public void updateHealth(){
-        health.setText("Health: " + game.getHealth());
+        health.setText("Health: " + Minesweeper.getHealth());
     }
 
     public void updateShield(){
-        shield.setText("Shield: " + game.getShield());
+        shield.setText("Shield: " + Minesweeper.getShield());
     }
 
-    public boolean isChoosingItem(){
-        return choosingItem;
+    public void updateScore(){
+        score.setText("Score: " + Minesweeper.getScore());
     }
+
 
     public Minesweeper getGame(){
         return game;
+    }
+
+    public static boolean isChoosingItem(){
+        return choosingItem;
     }
 
     public void adjustField(int[] reservedCoordinates){
@@ -212,17 +247,26 @@ public class UI extends JFrame {
     public void win() {
         if (!game.isLost()) {
             System.out.println("you won");
-            ItemChooser itemChooser = new ItemChooser(this);
-            itemChooser.setVisible(true);
-            choosingItem = true;
+            Minesweeper.setScale(1);
+            Minesweeper.setScoreMultiplier(1);
+            openItemChooser();
+            new UI(Minesweeper.getWidth() + 1, Minesweeper.getHeight() + 1);
+            dispose();
 
         }
     }
 
-    public void nextLevel(){
-        choosingItem = false;
-        new UI(Minesweeper.getWidth() + 1, Minesweeper.getHeight() + 1);
-        dispose();
+    private void openItemChooser(){
+        if(Item.getItemList() != null){
+            choosingItem = true;
+            itemChooser = new ItemChooser(this);
+            itemChooser.setVisible(true);
+            choosingItem = false;
+        }
+    }
+
+    public void closeItemChooser(){
+        itemChooser.dispose();
     }
     private void updateItemList(){
         itemList.removeAll();

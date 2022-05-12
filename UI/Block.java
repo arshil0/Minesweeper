@@ -1,5 +1,7 @@
 package Minesweeper.UI;
 
+import Minesweeper.Items.Item;
+import Minesweeper.Items.OnStartItem;
 import Minesweeper.game.*;
 
 import javax.swing.*;
@@ -12,8 +14,8 @@ import java.util.ArrayList;
 
 public class Block extends JLabel implements MouseListener {
 
-    private int widthLength = UI.FILESIZE/Minesweeper.getWidth()/4 * 3;
-    private int heightLength = UI.FILESIZE/Minesweeper.getHeight()/4 * 3;
+    private int widthLength = UI.FILESIZE/Minesweeper.getWidth()/3 * 2;
+    private int heightLength = UI.FILESIZE/Minesweeper.getHeight()/3 * 2;
     public int adjacentMines = 0;
     private boolean revealed = false;
     private boolean flagged = false;
@@ -60,7 +62,16 @@ public class Block extends JLabel implements MouseListener {
             setIcon(new ImageIcon(new ImageIcon("src/Minesweeper/UI/Sprites/" + type + ".png").getImage().getScaledInstance(heightLength,widthLength,Image.SCALE_DEFAULT)));
         }
         revealed = true;
-        ongoingGame.getGame().openedTile();
+        if(isMine){
+            ongoingGame.minusMineCount();
+        }
+        else{
+            ongoingGame.getGame().openedTile();
+            Minesweeper.addScore(100 * adjacentMines);
+            ongoingGame.updateScore();
+        }
+
+
         if(ongoingGame.getGame().getOpenedTiles() == (Minesweeper.getWidth() * Minesweeper.getHeight()) - ongoingGame.getGame().getNumberOfTotalMines()){
             ongoingGame.win();
         }
@@ -122,7 +133,7 @@ public class Block extends JLabel implements MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-        if (!Minesweeper.isLost() && !ongoingGame.isChoosingItem()) {
+        if (!Minesweeper.isLost()) {
             if(ongoingGame.getGame().isFirstMove() && e.getButton() == MouseEvent.BUTTON1){
                 ongoingGame.adjustField(opening());
                 ongoingGame.getGame().setFirstMove(false);
@@ -130,10 +141,11 @@ public class Block extends JLabel implements MouseListener {
                 openAdjacent(y,x);
             }
             else if (e.getButton() == MouseEvent.BUTTON1 && !flagged) {
-                if (isMine) {
+                if (isMine && !revealed) {
                     ongoingGame.getGame().takeDamage();
                     ongoingGame.updateHealth();
-                    if(ongoingGame.getGame().getHealth() == 0)
+                    ongoingGame.updateShield();
+                    if(ongoingGame.getGame().getHealth() <= 0)
                         ongoingGame.loseScreen();
                 }
                 if (adjacentMines == 0 && !isMine)
