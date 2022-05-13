@@ -159,7 +159,6 @@ public class Block extends JLabel implements MouseListener {
             } else if (e.getButton() == MouseEvent.BUTTON3 && !revealed && !ongoingGame.getGame().isFirstMove()) {
                 flag();
             }
-            
 
         }
     }
@@ -175,8 +174,6 @@ public class Block extends JLabel implements MouseListener {
     @Override
     public void mouseExited(MouseEvent e) {
     }
-
-
 
     public void openTile(){
         if (isMine && !revealed) {
