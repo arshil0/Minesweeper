@@ -17,8 +17,6 @@ public abstract class Item extends JLabel implements MouseListener {
     private JLabel benefit = new JLabel();
     private JLabel sabotage = new JLabel();
     private JLabel text = new JLabel();
-
-    private static ArrayList<Item> allItems;
     private static UI ongoingGame;
 
     public Item(){
