@@ -159,7 +159,7 @@ public class Block extends JLabel implements MouseListener {
             } else if (e.getButton() == MouseEvent.BUTTON3 && !revealed && !ongoingGame.getGame().isFirstMove()) {
                 flag();
             }
-            cheat(e);
+            
 
         }
     }
@@ -176,13 +176,9 @@ public class Block extends JLabel implements MouseListener {
     public void mouseExited(MouseEvent e) {
     }
 
-    private void cheat(MouseEvent e){
-        if(e.getButton() == MouseEvent.BUTTON3 && revealed)
-            ongoingGame.win();
-    }
+
 
     public void openTile(){
-        System.out.println("a");
         if (isMine && !revealed) {
             ongoingGame.getGame().takeDamage();
             ongoingGame.updateHealth();

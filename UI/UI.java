@@ -290,10 +290,4 @@ public class UI extends JFrame{
         }
         revalidate();
     }
-
-    public static void main(String[] args){
-        new UI();
-    }
-
-
 }
