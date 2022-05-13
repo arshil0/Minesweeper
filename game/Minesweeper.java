@@ -7,26 +7,29 @@ import java.util.Arrays;
 
 public class Minesweeper {
 
-    public static final int STARTWIDTH = 4;
-    public static final int STARTHEIGHT = 4;
+    public static final int STARTWIDTH = 7;
+    public static final int STARTHEIGHT = 7;
 
     public static final int MAXWIDTH = 20;
     public static final int MAXHEIGHT = 20;
+
     private static boolean lost = false;
     private boolean firstMove = true;
     private static int health = 1;
     private static int shield = 0;
     private static int score = 0;
+    private static int highScore;
     private static double scoreMultiplier = 1;
     private int moves = 0;
     private int openedTiles = 0;
     private static int width = STARTWIDTH;
     private static int height = STARTHEIGHT;
-    //the number of bombs = size * size / BOMBSCALE
+    //the number of bombs = (size * size / BOMBSCALE) * scale;
     private static final int BOMBSCALE = 5;
     private static double scale = 1;
     private static ArrayList<Item> items = new ArrayList<Item>();
     private Tile[][] field;
+    private int[] bombCoordinates;
 
 
     public Minesweeper(){
@@ -36,7 +39,6 @@ public class Minesweeper {
     public Minesweeper(int w, int h){
         if(w <= STARTWIDTH && h <= STARTHEIGHT)
             items.clear();
-        health = getHealth();
         if(health <= 0)
             health = 1;
         moves = 0;
@@ -53,7 +55,7 @@ public class Minesweeper {
     }
 
     public Minesweeper(int w, int h, int[] reservedCoordinates){
-        moves = 0;
+        moves = 1;
         width = w;
         height = h;
         lost = false;
@@ -92,7 +94,6 @@ public class Minesweeper {
             shield-= 1;
         else{
             health -=1;
-            items.remove(new SmallHeart());
         }
     }
     public static int getShield(){
@@ -114,6 +115,13 @@ public class Minesweeper {
         score = 0;
     }
 
+    public static void setHighScore(int h){
+        highScore = h;
+    }
+
+    public static int getHighScore(){
+        return highScore;
+    }
     public static void setScoreMultiplier(int s){
         scoreMultiplier = s;
     }
@@ -184,10 +192,14 @@ public class Minesweeper {
         scale = s;
     }
 
+    public int[] getBombCoordinates(){
+        return bombCoordinates;
+    }
+
     public void setField(int[] reservedCoordinates){
 
         int numberOfMines = getNumberOfTotalMines();
-        int[] bombCoordinates = generateMineCoordinates(numberOfMines, reservedCoordinates);
+        bombCoordinates = generateMineCoordinates(numberOfMines, reservedCoordinates);
         Arrays.sort(bombCoordinates);
         setField(bombCoordinates,reservedCoordinates);
     }

@@ -12,7 +12,7 @@ import java.awt.event.WindowEvent;
 
 public class ItemChooser extends JDialog {
 
-    private int itemsToChooseFrom = 3;
+    private static int itemsToChooseFrom = 3;
     public ItemChooser(UI ongoingGame){
         super();
         setLayout(new BorderLayout());
@@ -44,7 +44,6 @@ public class ItemChooser extends JDialog {
             for(int i = 0; i < itemsToChooseFrom ; i ++){
                 int randomItemNumber = (int) (Math.random() * itemList.length);
                 boolean success = true;
-                System.out.println(itemList[randomItemNumber] + " first step");
                 for(int r: reservedItemCoordinates){
                     if(r == randomItemNumber){
                         i --;
@@ -58,6 +57,14 @@ public class ItemChooser extends JDialog {
                 }
             }
         }
+    }
+
+    public static void addExtraItemToChoose(){
+        itemsToChooseFrom += 1;
+    }
+
+    public static void resetItemsToChooseFrom(){
+        itemsToChooseFrom = 3;
     }
 
     private void fillArrayWithMinusOne(int[] arr){

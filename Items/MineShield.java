@@ -24,6 +24,5 @@ public class MineShield extends Item implements OnStartItem{
     public void onStart(UI game) {
         Minesweeper.setShield(1);
         Minesweeper.multiplyScale(1.5);
-        game.addShield();
     }
 }

@@ -14,7 +14,7 @@ public class SmallHeart extends Item implements OnItemPickup{
     @Override
     public String getDescription() {
         return "Gives you an extra heart to survive a mine<br/><br/>The field gets expanded by 2 instead of 1 by the time of picking up this item" +
-                "<br/><br/>The heart is so small that it breaks, this item is destroyed upon taking damage!";
+                "<br/><br/>Be careful with this heart, so it doesn't shatter";
     }
 
     @Override

@@ -16,6 +16,7 @@ public class Block extends JLabel implements MouseListener {
 
     private int widthLength = UI.FILESIZE/Minesweeper.getWidth()/3 * 2;
     private int heightLength = UI.FILESIZE/Minesweeper.getHeight()/3 * 2;
+    private boolean cursed = false;
     public int adjacentMines = 0;
     private boolean revealed = false;
     private boolean flagged = false;
@@ -45,8 +46,19 @@ public class Block extends JLabel implements MouseListener {
         return revealed;
     }
 
+    public void curse(){
+        cursed = true;
+    }
     public void setAdjacentMines(int adjacentMines){
         this.adjacentMines = adjacentMines;
+    }
+
+    public int getAdjacentMines(){
+        return adjacentMines;
+    }
+
+    public String getType(){
+        return type;
     }
 
     public void changeValues(String s, boolean isMine, int y,int x){
@@ -76,6 +88,7 @@ public class Block extends JLabel implements MouseListener {
             ongoingGame.win();
         }
     }
+
     private void flag(){
         flagged = !flagged;
         if(flagged){
@@ -141,23 +154,13 @@ public class Block extends JLabel implements MouseListener {
                 openAdjacent(y,x);
             }
             else if (e.getButton() == MouseEvent.BUTTON1 && !flagged) {
-                if (isMine && !revealed) {
-                    ongoingGame.getGame().takeDamage();
-                    ongoingGame.updateHealth();
-                    ongoingGame.updateShield();
-                    if(ongoingGame.getGame().getHealth() <= 0)
-                        ongoingGame.loseScreen();
-                }
-                if (adjacentMines == 0 && !isMine)
-                    openAdjacent(y, x);
-                if(!revealed){
-                    ongoingGame.getGame().moved();
-                    updateIcon(adjacentMines, type);
-                }
+                openTile();
 
             } else if (e.getButton() == MouseEvent.BUTTON3 && !revealed && !ongoingGame.getGame().isFirstMove()) {
                 flag();
             }
+            cheat(e);
+
         }
     }
 
@@ -171,5 +174,27 @@ public class Block extends JLabel implements MouseListener {
 
     @Override
     public void mouseExited(MouseEvent e) {
+    }
+
+    private void cheat(MouseEvent e){
+        if(e.getButton() == MouseEvent.BUTTON3 && revealed)
+            ongoingGame.win();
+    }
+
+    public void openTile(){
+        System.out.println("a");
+        if (isMine && !revealed) {
+            ongoingGame.getGame().takeDamage();
+            ongoingGame.updateHealth();
+            ongoingGame.updateShield();
+            if(ongoingGame.getGame().getHealth() <= 0)
+                ongoingGame.loseScreen();
+        }
+        if (adjacentMines == 0 && !isMine)
+            openAdjacent(y, x);
+        if(!revealed){
+            ongoingGame.getGame().moved();
+            updateIcon(adjacentMines, type);
+        }
     }
 }

@@ -85,6 +85,8 @@ public abstract class Item extends JLabel implements MouseListener {
         itemList.add(new MineShield(ongoingGame));
         itemList.add(new ScoreMultiplier(ongoingGame));
         itemList.add(new RedDice(ongoingGame));
+        itemList.add(new ExtraItem(ongoingGame));
+        itemList.add(new RedPepper(ongoingGame));
     }
 
     public void putIcon(){

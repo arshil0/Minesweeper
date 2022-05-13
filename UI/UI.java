@@ -3,12 +3,15 @@ package Minesweeper.UI;
 import javax.swing.*;
 import Minesweeper.game.*;
 import Minesweeper.Items.*;
+import Minesweeper.File.*;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
-public class UI extends JFrame {
+public class UI extends JFrame{
 
     private JPanel itemList;
     private JPanel fieldPanel;
@@ -20,8 +23,9 @@ public class UI extends JFrame {
     private JLabel health = new JLabel("Health: ");
     private JLabel shield = new JLabel("Shield: ");
 
-    private static JPanel scorePanel = new JPanel();
+    private static JPanel scorePanel = new JPanel(new BorderLayout());
     private static JLabel score = new JLabel("Score: ");
+    private static JLabel highScore = new JLabel("HighScore: ");
 
     private ItemChooser itemChooser;
 
@@ -39,23 +43,29 @@ public class UI extends JFrame {
 
     public UI(int width, int height){
         super("Minesweeper");
-
         Item.setOngoingGame(this);
-        for(Item item: Minesweeper.getItemList()){
-            if(item instanceof OnStartItem){
-                ((OnStartItem) item).onStart(this);
-            }
-        }
+        if(Minesweeper.getScore() > Minesweeper.getHighScore())
+            Save.saveHighScore(Minesweeper.getScore());
         game = new Minesweeper(width,height);
         if(firstTimeOpeningProgram){
             Item.refreshItemList(this);
             Minesweeper.setShield(0);
             Minesweeper.setScale(1);
             Minesweeper.setScoreMultiplier(1);
-            shield.setVisible(false);
+            Minesweeper.setHighScore(Open.openHighScore());
+            Minesweeper.resetScore();
+            ItemChooser.resetItemsToChooseFrom();
             firstTimeOpeningProgram = false;
         }
+        if(Item.getItemList() != null)
+            if(Item.getItemList().length <= 3)
+                Item.removeFromItemList(new RedDice(this));
         setBlocks(game);
+        for(Item item: Minesweeper.getItemList()){
+            if(item instanceof OnStartItem){
+                ((OnStartItem) item).onStart(this);
+            }
+        }
         //adjust the window
         setSize(FILESIZE + 428,FILESIZE);
         setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -95,7 +105,9 @@ public class UI extends JFrame {
 
 
         updateScore();
-        scorePanel.add(score);
+        updateHighScore();
+        scorePanel.add(score, BorderLayout.NORTH);
+        scorePanel.add(highScore,BorderLayout.SOUTH);
         scorePanel.setBorder(BorderFactory.createEmptyBorder(0,0,10,0));
         add(scorePanel,BorderLayout.SOUTH);
 
@@ -114,10 +126,6 @@ public class UI extends JFrame {
         mineCount.setText("Mines: " + ++currentNumberOfMines);
     }
 
-    public void addShield(){
-        shield.setVisible(true);
-        updateShield();
-    }
     public void updateHealth(){
         health.setText("Health: " + Minesweeper.getHealth());
     }
@@ -128,6 +136,10 @@ public class UI extends JFrame {
 
     public void updateScore(){
         score.setText("Score: " + Minesweeper.getScore());
+    }
+
+    public void updateHighScore(){
+        highScore.setText("HighScore: " + Minesweeper.getHighScore());
     }
 
 
@@ -206,6 +218,8 @@ public class UI extends JFrame {
     }
 
     public void loseScreen(){
+        if(Minesweeper.getScore() > Minesweeper.getHighScore())
+            Save.saveHighScore(Minesweeper.getScore());
         firstTimeOpeningProgram = true;
         game.setLost(true);
         JDialog loseScreen = new JDialog();
